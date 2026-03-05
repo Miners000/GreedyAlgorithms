@@ -1,1 +1,3 @@
-2
+FIFO  : 12
+LRU   : 14
+OPTFF : 8
