@@ -42,7 +42,36 @@ int FIFO(int k, vector<int>& requests)
 
 int LRU(int k, vector<int>& requests)
 {
+    list<int> usageOrder;
+    unordered_map<int, list<int>::iterator> cachePosition;
+    int misses = 0;
 
+    for(int item : requests)
+    {
+        auto found = cachePosition.find(item);
+        if(found != cachePosition.end())
+        {
+            usageOrder.erase(found->second);
+            usageOrder.push_front(item);
+            found->second = usageOrder.begin();
+        }
+        else
+        {
+            misses++;
+
+            if(static_cast<int>(cachePosition.size()) >= k)
+            {
+                int toEvict = usageOrder.back();
+                usageOrder.pop_back();
+                cachePosition.erase(toEvict);
+            }
+
+            usageOrder.push_front(item);
+            cachePosition[item] = usageOrder.begin();
+        }
+    }
+
+    return misses;
 }
 
 int optff(int k, vector<int>& requests)
