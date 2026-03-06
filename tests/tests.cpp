@@ -68,11 +68,34 @@ int main()
 		allPassed &= expectEqual("LRU classic reference string", LRU(3, requests), 10);
 	}
 
+	{
+		vector<int> requests = {1, 2, 3, 1, 2, 3};
+		allPassed &= expectEqual("OPTFF warm cache then all hits", optff(3, requests), 3);
+	}
+
+	{
+		vector<int> requests = {7, 7, 8, 8, 7};
+		allPassed &= expectEqual("OPTFF capacity one", optff(1, requests), 3);
+	}
+
+	{
+		vector<int> requests = {
+			1, 2, 3, 4, 1, 2, 5, 1, 2, 3,
+			4, 5, 3, 2, 1, 4, 5, 3, 2, 1
+		};
+		allPassed &= expectEqual("OPTFF provided example", optff(4, requests), 8);
+	}
+
+	{
+		vector<int> requests = {1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5};
+		allPassed &= expectEqual("OPTFF beats LRU on reference string", optff(3, requests), 7);
+	}
+
 	if(!allPassed)
 	{
 		return 1;
 	}
 
-	cout << "All FIFO/LRU tests passed.\n";
+	cout << "All FIFO/LRU/OPTFF tests passed.\n";
 	return 0;
 }

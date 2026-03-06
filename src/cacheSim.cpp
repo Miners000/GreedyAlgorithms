@@ -76,7 +76,56 @@ int LRU(int k, vector<int>& requests)
 
 int optff(int k, vector<int>& requests)
 {
+    unordered_map<int, queue<int>> futurePositions;
+    for(int i = 0; i < static_cast<int>(requests.size()); i++)
+    {
+        futurePositions[requests[i]].push(i);
+    }
 
+    unordered_set<int> cache;
+    int misses = 0;
+
+    for(int i = 0; i < static_cast<int>(requests.size()); i++)
+    {
+        int item = requests[i];
+        futurePositions[item].pop();
+
+        if(cache.count(item))
+        {
+            continue;
+        }
+
+        misses++;
+        if(static_cast<int>(cache.size()) < k)
+        {
+            cache.insert(item);
+            continue;
+        }
+
+        int toEvict = -1;
+        int farthestNextUse = -1;
+
+        for(int cachedItem : cache)
+        {
+            int nextUse = numeric_limits<int>::max();
+            auto it = futurePositions.find(cachedItem);
+            if(it != futurePositions.end() && !it->second.empty())
+            {
+                nextUse = it->second.front();
+            }
+
+            if(nextUse > farthestNextUse)
+            {
+                farthestNextUse = nextUse;
+                toEvict = cachedItem;
+            }
+        }
+
+        cache.erase(toEvict);
+        cache.insert(item);
+    }
+
+    return misses;
 }
 
 pair<int, vector<int>> parseInput(const string& filename)
