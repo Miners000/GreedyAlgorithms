@@ -130,10 +130,10 @@ int optff(int k, vector<int>& requests)
 
 pair<int, vector<int>> parseInput(const string& filename)
 {
-    std::ifstream file(filename);
+    ifstream file(filename);
     if(!file.is_open())
     {
-        throw std::runtime_error("Cannot open file: " + filename);
+        throw runtime_error("Cannot open file: " + filename);
     }
 
     int k;
@@ -141,15 +141,15 @@ pair<int, vector<int>> parseInput(const string& filename)
 
     if(!(file >> k >> m))
     {
-        throw std::runtime_error("Failed to read k and m from input.");
+        throw runtime_error("Failed to read k and m from input.");
     }
     if(k < 1)
     {
-        throw std::runtime_error("Cache capacity k must be >= 1.");
+        throw runtime_error("Cache capacity k must be >= 1.");
     }
     if(m < 0)
     {
-        throw std::runtime_error("Number of requests m must be >= 0.");
+        throw runtime_error("Number of requests m must be >= 0.");
     }
 
     vector<int> requests(m);
@@ -157,8 +157,8 @@ pair<int, vector<int>> parseInput(const string& filename)
     {
         if(!(file >> requests[i]))
         {
-            throw std::runtime_error("Expected " + std::to_string(m) + " requests, found only " +
-                std::to_string(i) + ".");
+            throw runtime_error("Expected " + to_string(m) + " requests, found only " +
+                to_string(i) + ".");
         }
     }
     return {k, requests};
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
     {
         input = parseInput(argv[1]);
     }
-    catch (const std::exception& e)
+    catch (const exception& e)
     {
         cerr << "Error: " << e.what() << "\n";
         return 1;
