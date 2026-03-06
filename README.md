@@ -6,7 +6,7 @@ Implements and compares three cache eviction policies on the same request sequen
 
 ## Authors
 Hemanshu Boppana (UFID: 74149423)
-Trent Ford (UFID: )
+Trent Ford (UFID: 80027867)
 
 ---
 
@@ -21,6 +21,9 @@ cache-eviction/
 │   └── example.out        # Expected output for example.in
 ├── tests/
 │   └── test_cache.cpp     # 38-test unit + integration suite
+|── exe/
+│   ├── cacheSim           # Executable for three eviction methods
+│   └── cache_tests        # Executable for testing eviction methods
 ├── Makefile
 └── README.md
 ```
@@ -50,12 +53,20 @@ g++ -std=c++17 -O2 -o cache_sim src/cache_sim.cpp
 
 ```bash
 ./cacheSim <input_file>
+
+OR
+
+exe/cacheSim <input_file>
 ```
 
 **Example:**
 
 ```bash
 ./cacheSim data/example.in
+
+OR
+
+exe/cacheSim data/example.in
 ```
 
 **Expected output:**
@@ -142,3 +153,21 @@ OPTFF is strictly better than LRU on this sequence since it has fewer misses.
 
 Reasoning: OPTFF uses future knowledge to evict the page needed farthest in the future, while LRU only uses past recency and makes locally reasonable but globally suboptimal choices on this pattern.
 
+## Question 3: Prove OPTFF is Optimal
+
+We are trying to prove for any arbitary sequence sigma, misses(OPT, sigma) <= misses(A, sigma). 
+
+A can be transforms to be lazy (evicts only on miss) WLOG. We will construct A_i from A that will agree on every eviction and where A_i has no more misses than A_i-1.
+
+One step at a time, we will fix the ith miss of OPT which occurs at request r_t. This leads to two cases:
+
+Case 1 - Both OPT and A_i-1 miss at r_t. No transformation is needed in this case, so the sequence will continue.
+Case 2 - A_i-1 hits but OPT misses. The caches differ at this point. A_i-1 will transform into A_i as A_i will be forced to evict q and A_i loads p in place of q.
+We know p will be requested before q as OPT evicted q as the farthest-in-future element. Later, both will eventually miss on q.
+
+After this transformation, misses(A_i) <= misses(A_i-1) and A_i and OPT agree on the eviction at t.
+
+After repeating for OPT's m misses, A_m will agree with OPT and will lead to the following:
+misses(OPT) = misses(A) <= misses(A_m-1) <= ... <= misses(A_0) = misses(A)
+
+Therefore, misses(OPT, sigma), <= misses(A, sigma) for every fixed sequence sigma and offline algorithm A.
