@@ -4,6 +4,10 @@
 Implements and compares three cache eviction policies on the same request sequence:
 **FIFO**, **LRU**, and **OPTFF** (Belady's Optimal offline algorithm).
 
+## Authors
+Hemanshu Boppana (UFID: 74149423)
+Trent Ford (UFID: )
+
 ---
 
 ## Repository Structure
@@ -101,7 +105,40 @@ OPTFF : <misses>
 
 # Written Component
 
-## Algorithm Descriptions
+## Question 1: Empirical Comparison
 
-### FIFO (First-In, First-Out)
+Used three nontrivial input files, each with at least 50 requests:
+
+- `data/q1_file1.in` with `k = 3`, `m = 60`
+- `data/q1_file2.in` with `k = 4`, `m = 64`
+- `data/q1_file3.in` with `k = 5`, `m = 70`
+
+| Input File    | k | m | FIFO | LRU | OPTFF |
+| `q1_file1.in` | 3 | 60 | 54 | 56 | 35 |
+| `q1_file2.in` | 4 | 64 | 44 | 47 | 29 |
+| `q1_file3.in` | 5 | 70 | 45 | 41 | 26 |
+
+### Brief Comments
+
+- OPTFF has the fewest misses in all three files.
+- FIFO vs LRU is mixed: FIFO is slightly better in Files 1 and 2, while LRU is better in File 3.
+- These results makes sense. OPTFF is an offline optimal benchmark, while FIFO/LRU quality depends on the request pattern.
+
+## Question 2: Bad Sequence for LRU or FIFO
+
+For `k = 3`, a sequence exists where OPTFF has strictly fewer misses than LRU.
+
+- Chosen policy for comparison: `LRU`
+- Input file: `data/q2_lru_bad_k3.in`
+- Sequence (`m = 12`): `1 2 3 4 1 2 5 1 2 3 4 5`
+
+Computed misses:
+
+| Policy | Misses |
+| LRU    | 10 |
+| OPTFF  | 7 |
+
+OPTFF is strictly better than LRU on this sequence since it has fewer misses.
+
+Reasoning: OPTFF uses future knowledge to evict the page needed farthest in the future, while LRU only uses past recency and makes locally reasonable but globally suboptimal choices on this pattern.
 
